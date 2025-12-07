@@ -27,3 +27,11 @@ stack-data==0.6.3
 tornado==6.5.2
 traitlets==5.14.3
 wcwidth==0.2.14
+
+numpy==1.26.4
+opencv-python==4.6.0.66
+paddlepaddle==2.6.2
+paddleocr==2.7.0.2
+Pillow
+matplotlib
+ipywidgets
