@@ -13,4 +13,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD ["python", "PaddleOCR/PaddleOCR.py"]
+CMD ["python", "app/PaddleOCR.py"]
