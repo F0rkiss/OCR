@@ -1,44 +1,35 @@
 import os
-import cv2
-import numpy as np
 from paddleocr import PaddleOCR
 
 INPUT_DIR = "/data/input"
 OUTPUT_DIR = "/data/output"
+
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
-ocr_id = PaddleOCR(use_angle_cls=True, lang='id')
-ocr_en = PaddleOCR(use_angle_cls=True, lang='en')
+ocr = PaddleOCR(
+    use_angle_cls=True,
+    lang="en",
+    show_log=True
+)
 
-for filename in os.listdir(INPUT_DIR):
-    if not filename.lower().endswith((".png", ".jpg", ".jpeg")):
+print("✅ PaddleOCR Loaded")
+
+for fname in os.listdir(INPUT_DIR):
+    if not fname.lower().endswith((".jpg", ".png", ".jpeg")):
         continue
 
-    img_path = os.path.join(INPUT_DIR, filename)
-    img = cv2.imread(img_path)
+    img_path = os.path.join(INPUT_DIR, fname)
+    print(f"✅ Processing {fname}")
 
-    if img is None:
-        print(f"❌ Failed to load {filename}")
-        continue
+    result = ocr.ocr(img_path, cls=True)
 
-    print(f"✅ Image loaded: {filename} {img.shape}")
+    out_file = os.path.join(OUTPUT_DIR, fname + ".txt")
+    with open(out_file, "w", encoding="utf-8") as f:
+        for line in result[0]:
+            text = line[1][0]
+            conf = line[1][1]
+            f.write(f"{text}\t{conf:.2f}\n")
 
-    # OCR
-    res_id = ocr_id.ocr(img, cls=True)
-    res_en = ocr_en.ocr(img, cls=True)
+    print(f"✅ Saved → {out_file}")
 
-    print("ID OCR done")
-    print("EN OCR done")
-
-    # Save text result
-    output_txt = os.path.join(OUTPUT_DIR, filename + ".txt")
-    with open(output_txt, "w", encoding="utf-8") as f:
-        f.write("=== OCR ID ===\n")
-        for line in res_id[0]:
-            f.write(f"{line[1][0]}\n")
-
-        f.write("\n=== OCR EN ===\n")
-        for line in res_en[0]:
-            f.write(f"{line[1][0]}\n")
-
-    print(f"✅ Saved OCR result: {output_txt}")
+print("✅ All OCR done")
